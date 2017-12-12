@@ -1,6 +1,4 @@
 from market import Market
-import time
-import numpy as np
 import gdax
 from matplotlib import pyplot as plt
 import matplotlib.finance as finance
@@ -9,9 +7,6 @@ import os
 import yaml
 
 plt.style.use("aran")
-
-
-# plt.style.use("ggplot")
 
 class Tester(object):
     def __init__(self, config_uri):
@@ -135,9 +130,6 @@ class Tester(object):
                           price["volumefrom"],
                           price["volumeto"])
 
-            # print("Current balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,
-            #                                              self.currency_to_balance, self.currency_to))
-
             self.step_number += 1
             price = self.current_price()
 
@@ -151,7 +143,7 @@ class BackTester(Tester):
 
         bt = Market()  # Pass keys in
 
-        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=(300), exchange=self.exchange)
+        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks, exchange=self.exchange)
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")
@@ -171,9 +163,11 @@ class BackTester(Tester):
         ax = plt.subplot(311)
         legend = []
 
+
         finance.candlestick2_ochl(ax, self.opens, self.closes, self.highs, self.lows, width=1,
                                   colorup='g', colordown='r',
                                   alpha=0.25)
+
 
         for series_name, series_values in args:
             plt.plot(np.arange(len(series_values)), series_values, label=series_name)

@@ -1,7 +1,13 @@
+"""
+A set of trading strategies, each takes the current market environment: opens, highs etc. and
+provides methods should_buy and should_sell to define which behaviours to execute for a given
+environment.
+"""
+
 from indicators import *
 
-class Strategy(object):
 
+class Strategy(object):
     def __init__(self):
         pass
 
@@ -13,7 +19,6 @@ class Strategy(object):
 
 
 class NaiveStrategy(Strategy):
-
     def __init__(self):
         super().__init__()
 
@@ -27,7 +32,6 @@ class NaiveStrategy(Strategy):
 
 
 class DevonStrategy(Strategy):
-
     def __init__(self):
         super().__init__()
 
@@ -35,39 +39,38 @@ class DevonStrategy(Strategy):
         rsi = relative_strength_index(np.array(closes), period=14)
         bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
         sma = simple_moving_average(np.array(closes), 20)
-        ema = exponential_moving_average(np.array(closes), smoothing_factor=0.095)
+        ema = exponential_moving_average(np.array(closes), 10)
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
 
         indicator_truths = [
-                             rsi[-1] < 30,
-                             closes[-1] < bollinger_low[-1],
-                             closes[-1] < ema[-1],
-                             ema[-1] < sma[-1],
-                             ema[-1] < ema[-2],
-                             (bull[-1] > bull[-2]) and (bear[-1] > bear[-2]) and bear[-1] < 0 and bull[-1] < 0
-                             ]
+            rsi[-1] < 30,
+            closes[-1] < bollinger_low[-1],
+            closes[-1] < ema[-1],
+            ema[-1] < sma[-1],
+            ema[-1] < ema[-2],
+            (bull[-1] > bull[-2]) and (bear[-1] > bear[-2]) and bear[-1] < 0 and bull[-1] < 0
+        ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-        return num_truths >= 2
+        return num_truths > 2
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
-        ema = exponential_moving_average(np.array(closes), 0.095)
+        ema = exponential_moving_average(np.array(closes), 10)
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
 
         indicator_truths = [rsi[-1] > 70,
                             closes[-1] > ema[-1],
                             ema[-1] > ema[-2],
-                            bull[-1] > 0 and bull[-1] < bull[-2]
-                            # (bear[-1] > bear[-2]) and bear[-1] < 0
+                            bull[-1] > 0 and bull[-1] < bull[-2],
+                            (bear[-1] > bear[-2]) and bear[-1] < 0
                             ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-        return num_truths >= 2
+        return num_truths > 2
 
 
 class AranStrategy(Strategy):
-
     def __init__(self):
         super().__init__()
 
@@ -75,7 +78,7 @@ class AranStrategy(Strategy):
         rsi = relative_strength_index(np.array(closes), period=14)
         bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
         sma = simple_moving_average(np.array(closes), 20)
-        ema = exponential_moving_average(np.array(closes), 0.095)
+        ema = exponential_moving_average(np.array(closes), 10)
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
 
         indicators = {
@@ -89,7 +92,7 @@ class AranStrategy(Strategy):
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
-        ema = exponential_moving_average(np.array(closes), 0.095)
+        ema = exponential_moving_average(np.array(closes), 10)
         bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
 
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
@@ -105,16 +108,32 @@ class AranStrategy(Strategy):
 
 
 class PeranStrategy(Strategy):
-
     def __init__(self):
         super().__init__()
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        if highs[:-30] < lows[:-1]*1.01:
+        if highs[:-30] < lows[:-1] * 1.01:
             return True
         return False
 
     def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        if highs[:-30] > lows[:-1]*1.01:
+        if highs[:-30] > lows[:-1] * 1.01:
             return True
         return False
+
+
+class TrendEmaStrategy(object):
+    def __init__(self):
+        pass
+
+    def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        ema_short = exponential_moving_average(np.array(closes), 5)
+        ema_long = exponential_moving_average(np.array(closes), 20)
+
+        return ema_short[-2] > ema_long[-1] and ema_short[-1] < ema_long[-1]
+
+    def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        ema_short = exponential_moving_average(np.array(closes), 5)
+        ema_long = exponential_moving_average(np.array(closes), 20)
+
+        return ema_short[-2] > ema_long[-1] and ema_short[-1] > ema_long[-1]

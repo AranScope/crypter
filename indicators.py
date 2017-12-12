@@ -27,7 +27,7 @@ def simple_moving_average(values, period):
     raise RuntimeError("Can not compute SMA of dataset smaller than period")
 
 
-def exponential_moving_average(values, smoothing_factor):
+def exponential_moving_average(values, periods):
     """
     Compute an exponential moving average over a list.
 
@@ -37,6 +37,9 @@ def exponential_moving_average(values, smoothing_factor):
     :param smoothing_factor: The degree of weighting decrease for previous observations
     :return: The exponential moving average of the data
     """
+
+    if periods is not None:
+        smoothing_factor = 2 / (periods + 1)
 
     ema = [values[0]]
 
@@ -140,7 +143,7 @@ def relative_strength_index(values, period=14):
 
 
 def elder_ray(closes, highs, lows, period=13.0):
-    ema = exponential_moving_average(closes, smoothing_factor=2.0 / (period + 1.0))
+    ema = exponential_moving_average(closes, period)
     bull = [high - avg for high, avg in zip(highs, ema)]
     bear = [low - avg for low, avg in zip(lows, ema)]
 
