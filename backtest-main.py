@@ -42,8 +42,8 @@ class Tester(BackTester):
             ("sma", sma),
             ("ema", ema),
             ("close", self.closes),
-            ("bol_high", bollinger_high),
-            ("bol_low", bollinger_low)
+            ("bol upper", bollinger_high),
+            ("bol lower", bollinger_low)
             # ("RSI", rsis)
         )
         # )
