@@ -3,26 +3,26 @@ import gdax
 from indicators import *
 import os
 import yaml
+from graphics import plot_stock_graph
+
 
 class Tester(object):
-    def __init__(self, config_uri):
+    def __init__(self, config):
 
-        with open(config_uri, 'r') as f:
-            conf = yaml.load(f)
-            self.currency_from = conf['currency_from']['symbol']
-            self.currency_to = conf['currency_to']['symbol']
-            self.currency_from_balance = conf['currency_from']['balance']
-            self.currency_to_balance = conf['currency_to']['balance']
-            self.transaction_fee = conf['transaction_fee']
-            self.tick_start_delay = conf['tick_start_delay']
-            self.tick_duration = conf['tick_duration']
-            self.num_ticks = conf['num_ticks']
-            self.exchange = conf['exchange']
+        self.currency_from = config['currency_from']['symbol']
+        self.currency_to = config['currency_to']['symbol']
+        self.currency_from_balance = config['currency_from']['balance']
+        self.currency_to_balance = config['currency_to']['balance']
+        self.transaction_fee = config['transaction_fee']
+        self.tick_start_delay = config['tick_start_delay']
+        self.tick_duration = config['tick_duration']
+        self.num_ticks = config['num_ticks']
+        self.exchange = config['exchange']
 
-            if 'sell_on_finish' in conf:
-                self.sell_on_finish = conf['sell_on_finish']
-            else:
-                self.sell_on_finish = None
+        if 'sell_on_finish' in config:
+            self.sell_on_finish = config['sell_on_finish']
+        else:
+            self.sell_on_finish = None
 
         self.step_number = 0
 
@@ -140,8 +140,10 @@ class Tester(object):
 
 
 class BackTester(Tester):
-    def __init__(self, config_uri):
+    def __init__(self, config_uri, strategy):
         super().__init__(config_uri)
+
+        self.strat = strategy
 
         bt = Market()  # Pass keys in
 
@@ -161,6 +163,32 @@ class BackTester(Tester):
             return self.prices['Data'][self.step_number]
         else:
             return None
+
+    def tick(self, time, open, high, low, close, volume_from, volume_to):
+
+        if self.strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if self.currency_from_balance > 0:
+                self.sell(self.currency_from_balance)
+        elif self.strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if self.currency_to_balance > 0:
+                self.buy(self.currency_to_balance)
+
+    def stop(self):
+
+        if self.sell_on_finish is not None:
+            if self.sell_on_finish == self.currency_from:
+                if self.currency_to_balance > 0:
+                    print("Transferring remaining {} to {}".format(self.currency_to, self.currency_from))
+                    self.buy(self.currency_to_balance)
+            else:
+                if self.currency_from_balance > 0:
+                    print("Transferring remaining {} to {}".format(self.currency_from, self.currency_to))
+                    self.sell(self.currency_from_balance)
+
+        print("Final balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,
+                                                   self.currency_to_balance, self.currency_to))
+
+        plot_stock_graph(self.opens, self.closes, self.highs, self.lows, self.buys, self.sells)
 
 
 class RealtimeTester(Tester):
@@ -244,8 +272,6 @@ class GDAXTester(Tester):
 
             print(self.auth_client.buy(price='{0:.6f}'.format(conversion_rate),
                                        size='{0:.6f}'.format(amount / conversion_rate), product_id='ETH-BTC'))
-
-            # print(auth_client.get_accounts())
 
             print("BUY ORDER: Purchased {} {} for {} {}".format(amount / conversion_rate, self.currency_from, amount,
                                                                 self.currency_to))

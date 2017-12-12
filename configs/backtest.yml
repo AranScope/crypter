@@ -1,5 +1,8 @@
 exchange: gdax
 
+type: backtest # live, realtimetest
+strategy: devon
+
 tick_duration: 1 # minutes
 num_ticks: 100
 tick_start_delay: 50 # minutes
