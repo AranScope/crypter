@@ -1,6 +1,7 @@
 from market import Market
 import time
 import numpy as np
+import gdax
 from matplotlib import pyplot as plt
 import matplotlib.finance as finance
 from indicators import *
@@ -197,10 +198,8 @@ class BackTester(Tester):
         plt.show()
 
 
-import gdax
-
-
 class RealtimeTester(Tester):
+
     def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025,
                  delay=60):
 

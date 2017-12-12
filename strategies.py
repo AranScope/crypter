@@ -102,3 +102,19 @@ class AranStrategy(Strategy):
         value = sum([v for k, v in indicators.items() if k])
 
         return value >= 1.0
+
+
+class PeranStrategy(Strategy):
+
+    def __init__(self):
+        super().__init__()
+
+    def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        if highs[:-30] < lows[:-1]*1.01:
+            return True
+        return False
+
+    def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        if highs[:-30] > lows[:-1]*1.01:
+            return True
+        return False
