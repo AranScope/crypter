@@ -22,14 +22,17 @@ class Tester(BackTester):
         #     self.buy(self.currency_to_balance)
 
         if self.sell_on_finish is not None:
-            if self.sell_on_finish == self.currency_to:
+            if self.sell_on_finish == self.currency_from:
+                print("SELLING TO ETH")
+                if self.currency_to_balance > 0:
+                    print("Transferring remaining {} to {}".format(self.currency_to, self.currency_from))
+                    self.buy(self.currency_to_balance)
+
+            else:
                 if self.currency_from_balance > 0:
                     print("Transferring remaining {} to {}".format(self.currency_from, self.currency_to))
                     self.sell(self.currency_from_balance)
-            else:
-                if self.currency_to_balance > 0:
-                    print("Transferring remaining {} to {}".format(self.currency_to, self.currency_from))
-                    self.sell(self.currency_to_balance)
+
 
 
         print("Final balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,

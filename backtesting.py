@@ -156,8 +156,6 @@ class BackTester(Tester):
         self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
                                         limit=self.num_ticks, exchange=self.exchange)
 
-        print(self.prices['Data'])
-
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")
