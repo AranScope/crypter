@@ -4,7 +4,9 @@ from strategies import *
 
 # strat = AranStrategy()
 # strat = NaiveStrategy()
-strat = DevonStrategy()
+# strat = DevonStrategy()
+strat = PeranStrategy()
+
 
 class Tester(BackTester):
     def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal):
@@ -55,16 +57,14 @@ class Tester(BackTester):
 
     def tick(self, time, open, high, low, close, volume_from, volume_to):
 
-        if len(self.closes) > 20:
+        if len(self.closes) > 30:
             #
-
-            if strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
-                if self.currency_to_balance > 0:
-                    self.buy(self.currency_to_balance)
-
-            elif strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
                 if self.currency_from_balance > 0:
                     self.sell(self.currency_from_balance)
+            elif strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+                if self.currency_to_balance > 0:
+                    self.buy(self.currency_to_balance)
 
             # sma = simple_moving_average(np.array(self.closes), period=20)
             # ema = exponential_moving_average(np.array(self.closes), smoothing_factor=0.2)

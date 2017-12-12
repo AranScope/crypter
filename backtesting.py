@@ -7,8 +7,8 @@ import matplotlib.finance as finance
 from indicators import *
 import os
 
-plt.style.use("aran")
-# plt.style.use("ggplot")
+#plt.style.use("aran")
+#plt.style.use("ggplot")
 
 class Tester(object):
     def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025, delay=0):
@@ -132,7 +132,7 @@ class BackTester(Tester):
 
         bt = Market() # Pass keys in
 
-        self.prices = bt.histo_minute(currency_from, currency_to, n=(60), exchange="bittrex")
+        self.prices = bt.histo_minute(currency_from, currency_to, n=(200), exchange="bittrex")
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")

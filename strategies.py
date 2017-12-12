@@ -110,11 +110,21 @@ class PeranStrategy(Strategy):
         super().__init__()
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        if highs[:-30] < lows[:-1]*1.01:
-            return True
+        print("Price to compare: "+str(closes[-1]))
+        if len(closes) > 20:
+            for close in reversed(closes[20:-1]):
+                print(close)
+                if close < closes[-1]*1.01:
+                    return True
         return False
 
     def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        if highs[:-30] > lows[:-1]*1.01:
-            return True
-        return False
+        #print("low for tick: "+lows[-1])
+        print("Price to compare: "+str(closes[-1]))
+
+        if len(closes) > 20:
+            for close in reversed(closes[20:-1]):
+                print(close)
+                if close > closes[-1]*1.01:
+                    return True
+        return
