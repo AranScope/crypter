@@ -4,7 +4,9 @@ from strategies import *
 
 # strat = AranStrategy()
 # strat = NaiveStrategy()
-strat = DevonStrategy()
+# strat = DevonStrategy()
+strat = PeranStrategy()
+
 
 
 # strat = TrendEmaStrategy()
@@ -32,22 +34,22 @@ class Tester(BackTester):
 
         self.draw_line_graph(
             ("sma", sma),
-            ("ema", ema),
-            ("close", self.closes),
-            ("bol upper", bollinger_high),
-            ("bol lower", bollinger_low)
+            #("ema", ema),
+            #("close", self.closes),
+            #("bol upper", bollinger_high),
+            #("bol lower", bollinger_low)
             # ("RSI", rsis)
         )
 
     def tick(self, time, open, high, low, close, volume_from, volume_to):
 
-        if strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+        if strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if self.currency_from_balance > 0:
+                self.sell(self.currency_from_balance)
+        elif strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
             if self.currency_to_balance > 0:
                 self.buy(self.currency_to_balance)
 
-        elif strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
-            if self.currency_from_balance > 0:
-                self.sell(self.currency_from_balance)
 
 
 test = Tester('./configs/backtest.yml')
