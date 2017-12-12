@@ -5,22 +5,24 @@ from matplotlib import pyplot as plt
 import matplotlib.finance as finance
 from indicators import *
 import os
+import yaml
 
 plt.style.use("aran")
 # plt.style.use("ggplot")
 
 class Tester(object):
-    def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025, delay=0):
+    def __init__(self, config_uri):
 
-        self.currency_from = currency_from
-        self.currency_to = currency_to
+        with open(config_uri, 'r') as f:
+            conf = yaml.load(f)
+            self.currency_from = conf['currency_from']['symbol']
+            self.currency_to = conf['currency_to']['symbol']
+            self.currency_from_balance = conf['currency_from']['balance']
+            self.currency_to_balance = conf['currency_to']['balance']
+            self.transaction_fee = conf['transaction_fee']
+            self.tick_start_delay = conf['tick_start_delay']
+            self.number_of_ticks = conf['number_of_ticks']
 
-        self.currency_from_balance = currency_from_bal
-        self.currency_to_balance = currency_to_bal
-
-        self.transaction_fee = transaction_fee
-
-        self.delay = delay
         self.step_number = 0
 
         self.times = []
@@ -108,14 +110,12 @@ class Tester(object):
             self.volume_froms.append(price["volumefrom"])
             self.volume_tos.append(price["volumeto"])
 
-            self.tick(price["time"], price["open"], price["high"], price["low"], price["close"], price["volumefrom"],
-                      price["volumeto"])
+            if self.step_number >= self.tick_start_delay:
+                self.tick(price["time"], price["open"], price["high"], price["low"], price["close"], price["volumefrom"],
+                          price["volumeto"])
 
             # print("Current balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,
             #                                              self.currency_to_balance, self.currency_to))
-
-            if self.delay > 0:
-                time.sleep(self.delay)
 
             self.step_number += 1
             price = self.current_price()
@@ -125,13 +125,12 @@ class Tester(object):
 
 
 class BackTester(Tester):
-    def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025, delay=0):
-        super().__init__(currency_from, currency_to, currency_from_bal, currency_to_bal,
-                         transaction_fee=transaction_fee, delay=delay)
+    def __init__(self, config_uri):
+        super().__init__(config_uri)
 
         bt = Market() # Pass keys in
 
-        self.prices = bt.histo_minute(currency_from, currency_to, n=(60), exchange="bittrex")
+        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=(300), exchange="gdax")
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")
@@ -207,14 +206,12 @@ import gdax
 
 
 class RealtimeTester(Tester):
-    def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025,
-                 delay=60):
+    def __init__(self, config_uri):
 
-        super().__init__(currency_from, currency_to, currency_from_bal, currency_to_bal,
-                         transaction_fee=transaction_fee, delay=delay)
+        super().__init__(config_uri)
         self.market = Market()
 
-        for price in self.market.histo_minute(currency_from, currency_to, n=60)['Data']:
+        for price in self.market.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks)['Data']:
             self.times.append(price["time"])
             self.opens.append(price["open"])
             self.highs.append(price["high"])
@@ -236,11 +233,9 @@ class RealtimeTester(Tester):
 
 
 class GDAXTester(Tester):
-    def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal, transaction_fee=0.0025,
-                 delay=60):
+    def __init__(self, config_uri):
 
-        super().__init__(currency_from, currency_to, currency_from_bal, currency_to_bal,
-                         transaction_fee=transaction_fee, delay=delay)
+        super().__init__(config_uri)
         self.market = Market()
 
         key = os.environ.get('GDAX_PUBLIC')
@@ -253,7 +248,7 @@ class GDAXTester(Tester):
 
         self.auth_client = gdax.AuthenticatedClient(key, secret, passcode)
 
-        for price in self.market.histo_minute(currency_from, currency_to, n=60)['Data']:
+        for price in self.market.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks)['Data']:
             self.times.append(price["time"])
             self.opens.append(price["open"])
             self.highs.append(price["high"])
