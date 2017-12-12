@@ -3,9 +3,9 @@ from indicators import *
 from strategies import *
 
 # strat = AranStrategy()
-strat = NaiveStrategy()
+#strat = NaiveStrategy()
 # strat = DevonStrategy()
-# strat = PeranStrategy()
+strat = PeranStrategy()
 
 
 

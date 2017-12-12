@@ -1,7 +1,7 @@
 exchange: gdax
 
 tick_duration: 1 # minutes
-num_ticks: 100
+num_ticks: 2000
 tick_start_delay: 50 # minutes
 
 currency_from:

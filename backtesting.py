@@ -6,11 +6,8 @@ from indicators import *
 import os
 import yaml
 
-plt.style.use("aran")
-
-
-# plt.style.use("aran")
-# plt.style.use("ggplot")
+#plt.style.use("aran")
+#plt.style.use("ggplot")
 
 class Tester(object):
     def __init__(self, config_uri):
