@@ -6,12 +6,12 @@ tick_start_delay: 50 # minutes
 
 currency_from:
     symbol: ETH
-    balance: 0
+    balance: 1
 
 currency_to:
     symbol: BTC
-    balance: 1
+    balance: 0
 
-sell_on_finish: BTC
+sell_on_finish: ETH
 
 transaction_fee: 0.0025

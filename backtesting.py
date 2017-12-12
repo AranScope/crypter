@@ -1,16 +1,9 @@
 from market import Market
 import gdax
-from matplotlib import pyplot as plt
-import matplotlib.finance as finance
 from indicators import *
 import os
 import yaml
 
-plt.style.use("aran")
-
-
-# plt.style.use("aran")
-# plt.style.use("ggplot")
 
 class Tester(object):
     def __init__(self, config_uri):
@@ -169,63 +162,6 @@ class BackTester(Tester):
             return self.prices['Data'][self.step_number]
         else:
             return None
-
-    def draw_line_graph(self, *args):
-
-        ax = plt.subplot(311)
-        legend = []
-
-        finance.candlestick2_ochl(ax, self.opens, self.closes, self.highs, self.lows, width=1,
-                                  colorup='g', colordown='r',
-                                  alpha=0.25)
-
-        for series_name, series_values in args:
-            plt.plot(np.arange(len(series_values)), series_values, label=series_name)
-
-        legend.append("buys")
-        ax.scatter([x[0] for x in self.buys], [x[1]["close"] for x in self.buys], c='#00ff00', label='buys', marker='^',
-                   zorder=10, linewidths=2)
-
-        legend.append("sells")
-        ax.scatter([x[0] for x in self.sells], [x[1]["close"] for x in self.sells], c='#ee0000', label='sells',
-                   marker='v', zorder=10, linewidths=2)
-
-        plt.ylabel('price')
-
-        plt.legend(loc='upper left')
-
-        plt.subplot(312)
-
-        bull, bear = elder_ray(self.closes, self.highs, self.lows)
-        legend2 = []
-        legend2.append("bull")
-        plt.bar(np.arange(len(bull)), bull)
-        plt.bar(np.arange(len(bear)), bear)
-        legend2.append("bear")
-        plt.ylabel("bull/bear")
-
-        plt.subplot(313)
-        rsi = relative_strength_index(np.array(self.closes), period=14)
-
-        plt.bar(np.arange(len(rsi)), rsi, label="RSI")
-        plt.ylabel("rsi")
-        plt.legend(loc="upper left")
-        plt.show()
-
-    def draw_bar_graph(self, *args):
-        x = np.arange(len(self.closes))
-
-        legend = []
-
-        for series_name, series_values in args:
-            legend.append(series_name)
-            plt.bar(x, list(series_values))
-
-        plt.ylabel('Price')
-
-        plt.legend(legend, loc='upper left')
-
-        plt.show()
 
 
 class RealtimeTester(Tester):
