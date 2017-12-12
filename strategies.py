@@ -1,3 +1,5 @@
+import math
+
 from indicators import *
 
 class Strategy(object):
@@ -110,21 +112,27 @@ class PeranStrategy(Strategy):
         super().__init__()
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        print("Price to compare: "+str(closes[-1]))
-        if len(closes) > 20:
-            for close in reversed(closes[20:-1]):
-                print(close)
-                if close < closes[-1]*1.01:
-                    return True
+        # sma = simple_moving_average(np.array(highs), period=1)
+        # for num in reversed(sma[:-1]):
+        #     if math.isnan(num):
+        #         continue
+        #     if num >= sma[-1]:
+        #         return False
+        #     else:
+        #         return True
+        if highs[-1] > highs[-2] > highs[-3] > highs[-4] > highs[5]:
+            return True
         return False
 
     def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
-        #print("low for tick: "+lows[-1])
-        print("Price to compare: "+str(closes[-1]))
-
-        if len(closes) > 20:
-            for close in reversed(closes[20:-1]):
-                print(close)
-                if close > closes[-1]*1.01:
-                    return True
-        return
+        # sma = simple_moving_average(np.array(highs), period=1)
+        # for num in reversed(sma[:-1]):
+        #     if math.isnan(num):
+        #         continue
+        #     if num <= sma[-1]:
+        #         return False
+        #     else:
+        #         return True
+        if lows[-1] < lows[-2] and lows[-1] < lows[3]:
+            return True
+        return False

@@ -22,8 +22,8 @@ strat = DevonStrategy()
 
 
 class Tester(GDAXTester):
-    def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal):
-        super().__init__(currency_from, currency_to, currency_from_bal, currency_to_bal)
+    def __init__(self, config_uri):
+        super().__init__(config_uri)
 
     def tick(self, time, open, high, low, close, volume_from, volume_to):
 

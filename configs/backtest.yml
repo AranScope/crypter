@@ -1,0 +1,15 @@
+exchange: gdax
+
+number_of_ticks: 5440
+tick_frequency: 1 # minutes
+tick_start_delay: 20 # minutes
+
+currency_from:
+    symbol: ETH
+    balance: 1
+
+currency_to:
+    symbol: BTC
+    balance: 0
+
+transaction_fee: 0.0025
