@@ -148,7 +148,7 @@ class BackTester(Tester):
 
     def draw_line_graph(self, *args):
 
-        ax = plt.subplot(211)
+        ax = plt.subplot(311)
         legend = []
 
         finance.candlestick2_ochl(ax, self.opens, self.closes, self.highs, self.lows, width=1,
@@ -168,7 +168,7 @@ class BackTester(Tester):
 
         plt.legend(loc='upper left')
 
-        plt.subplot(212)
+        plt.subplot(312)
 
         bull, bear = elder_ray(self.closes, self.highs, self.lows)
         legend2 = []
@@ -176,11 +176,15 @@ class BackTester(Tester):
         plt.bar(np.arange(len(bull)), bull)
         plt.bar(np.arange(len(bear)), bear)
         legend2.append("bear")
-        plt.ylabel("price")
-        plt.show()
+        plt.ylabel("bull/bear")
 
-        # plt.subplot(213)
-        # rsi = relative_strength_index(np.array(closes), period=14)
+        plt.subplot(313)
+        rsi = relative_strength_index(np.array(self.closes), period=14)
+
+        plt.bar(np.arange(len(rsi)), rsi, label="RSI")
+        plt.ylabel("rsi")
+        plt.legend(loc="upper left")
+        plt.show()
 
 
     def draw_bar_graph(self, *args):

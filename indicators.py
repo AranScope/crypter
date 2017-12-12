@@ -1,10 +1,12 @@
 import numpy as np
 import time
 
+
 def rolling_window(a, window):
     shape = a.shape[:-1] + (a.shape[-1] - window + 1, window)
     strides = a.strides + (a.strides[-1],)
     return np.lib.stride_tricks.as_strided(a, shape=shape, strides=strides)
+
 
 def simple_moving_average(values, period):
     """
@@ -18,7 +20,7 @@ def simple_moving_average(values, period):
     """
 
     if len(values) >= period:
-        padding = np.full((period-1,), np.nan)
+        padding = np.full((period - 1,), np.nan)
         mean = np.mean(rolling_window(values, period), 1)
         return np.concatenate([padding, mean])
 
@@ -43,7 +45,6 @@ def exponential_moving_average(values, smoothing_factor):
     return ema
 
 
-
 def bollinger(prices, num_sd=2.0, period=20):
     """
     Compute the Bollinger bands for a list of prices.
@@ -60,9 +61,10 @@ def bollinger(prices, num_sd=2.0, period=20):
     stdevs = np.multiply(msd, num_sd)
 
     upper, lower = np.add(sma, stdevs), np.subtract(sma, stdevs)
-    assert(len(upper) == len(prices))
+    assert (len(upper) == len(prices))
 
     return upper, lower
+
 
 def moving_standard_deviation(data, period):
     """
@@ -75,7 +77,7 @@ def moving_standard_deviation(data, period):
     :return: The moving standard deviation of the data
     """
 
-    padding = np.full((period-1,), np.nan)
+    padding = np.full((period - 1,), np.nan)
     std = np.std(rolling_window(data, period), 1)
     return np.concatenate([padding, std])
 
@@ -107,7 +109,7 @@ def relative_strength_index(values, period=14):
         losses = []
 
         for i in range(len(window) - 1):
-            diff = window[i+1] - window[i]
+            diff = window[i + 1] - window[i]
             if diff > 0:
                 gains.append(diff)
             elif diff < 0:
@@ -115,24 +117,26 @@ def relative_strength_index(values, period=14):
             else:
                 pass
 
-
         if not gains:
             gains.append(1)
 
         if not losses:
             losses.append(1)
 
+        rs = (sum(gains) / len(gains)) / (sum(losses) / len(losses))
 
-        rs = (sum(gains)/len(gains)) / (sum(losses)/len(losses))
+        # (sum(gains) / max(1, len(gains))) / (max(1, (sum(losses) / max(1, len(losses)))))
 
-            # (sum(gains) / max(1, len(gains))) / (max(1, (sum(losses) / max(1, len(losses)))))
-
-        rsi = 100 - 100 / (1+rs)
+        rsi = 100 - 100 / (1 + rs)
         rsis.append(rsi)
 
-    padding = np.full((period - 1,), np.nan)
-    return np.concatenate([padding, np.array(rsis)])
+    # TODO: This is FIX
+    padding = np.full((period - 1,), 0)
 
+    result = np.concatenate([padding, np.array(rsis)])
+    assert (len(result) == len(values))
+
+    return result
 
 
 def elder_ray(closes, highs, lows, period=13.0):
@@ -150,9 +154,9 @@ if __name__ == "__main__":
 
     for i in range(10000):
         start = time.time()
-        simple_moving_average(np.array([1,2,3,4,5,6,7,8,9,10]), 5)
+        simple_moving_average(np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10]), 5)
         end = time.time()
-        times.append(end-start)
+        times.append(end - start)
 
     avg_time = sum(times) / len(times)
 

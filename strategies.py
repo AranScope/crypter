@@ -40,7 +40,7 @@ class DevonStrategy(Strategy):
 
         indicator_truths = [
                              rsi[-1] < 30,
-                             # closes[-1] < bollinger_low[-1],
+                             closes[-1] < bollinger_low[-1],
                              closes[-1] < ema[-1],
                              ema[-1] < sma[-1],
                              ema[-1] < ema[-2],
@@ -48,7 +48,7 @@ class DevonStrategy(Strategy):
                              ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-        return num_truths >= 3
+        return num_truths >= 2
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
