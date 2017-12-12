@@ -103,9 +103,9 @@ class Tester(object):
                 "\nSELL ORDER:\n\tPurchased: {} {}\n\tFor: {} {}\n\tExchange rate: {}\n\tAt time: {}\n".format(
                     amount * conversion_rate,
                     self.currency_to,
-                    conversion_rate,
                     amount,
                     self.currency_from,
+                    conversion_rate,
                     self.current_time()))
 
         else:
