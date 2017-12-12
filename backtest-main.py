@@ -5,13 +5,8 @@ from graphics import plot_stock_graph
 
 # strat = AranStrategy()
 strat = NaiveStrategy()
-
-
 # strat = DevonStrategy()
 # strat = PeranStrategy()
-
-
-
 # strat = TrendEmaStrategy()
 
 class Tester(BackTester):

@@ -4,7 +4,6 @@ from indicators import *
 import os
 import yaml
 
-
 class Tester(object):
     def __init__(self, config_uri):
 
