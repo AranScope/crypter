@@ -7,8 +7,10 @@ import os
 import yaml
 
 plt.style.use("aran")
-#plt.style.use("aran")
-#plt.style.use("ggplot")
+
+
+# plt.style.use("aran")
+# plt.style.use("ggplot")
 
 class Tester(object):
     def __init__(self, config_uri):
@@ -21,7 +23,8 @@ class Tester(object):
             self.currency_to_balance = conf['currency_to']['balance']
             self.transaction_fee = conf['transaction_fee']
             self.tick_start_delay = conf['tick_start_delay']
-            self.number_of_ticks = conf['number_of_ticks']
+            self.tick_duration = conf['tick_duration']
+            self.num_ticks = conf['num_ticks']
             self.exchange = conf['exchange']
 
             if 'sell_on_finish' in conf:
@@ -150,7 +153,11 @@ class BackTester(Tester):
 
         bt = Market()  # Pass keys in
 
-        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks, exchange=self.exchange)
+        self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
+                                        limit=self.num_ticks, exchange=self.exchange)
+
+        print(self.prices['Data'])
+
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")
@@ -170,11 +177,9 @@ class BackTester(Tester):
         ax = plt.subplot(311)
         legend = []
 
-
         finance.candlestick2_ochl(ax, self.opens, self.closes, self.highs, self.lows, width=1,
                                   colorup='g', colordown='r',
                                   alpha=0.25)
-
 
         for series_name, series_values in args:
             plt.plot(np.arange(len(series_values)), series_values, label=series_name)
@@ -230,7 +235,7 @@ class RealtimeTester(Tester):
         super().__init__(config_uri)
         self.market = Market()
 
-        for price in self.market.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks)['Data']:
+        for price in self.market.histo_minute(self.currency_from, self.currency_to, limit=self.num_ticks)['Data']:
             self.times.append(price["time"])
             self.opens.append(price["open"])
             self.highs.append(price["high"])
@@ -265,7 +270,7 @@ class GDAXTester(Tester):
 
         self.auth_client = gdax.AuthenticatedClient(key, secret, passcode)
 
-        for price in self.market.histo_minute(self.currency_from, self.currency_to, n=self.number_of_ticks)['Data']:
+        for price in self.market.histo_minute(self.currency_from, self.currency_to, limit=self.num_ticks)['Data']:
             self.times.append(price["time"])
             self.opens.append(price["open"])
             self.highs.append(price["high"])

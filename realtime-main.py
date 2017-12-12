@@ -4,7 +4,6 @@ from strategies import *
 
 strat = DevonStrategy()
 
-
 class Tester(RealtimeTester):
     def __init__(self, currency_from, currency_to, currency_from_bal, currency_to_bal):
         super().__init__(currency_from, currency_to, currency_from_bal, currency_to_bal)

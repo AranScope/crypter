@@ -27,9 +27,14 @@ class Market(object):
             fsym, tsym, exchange)
         return self.request(url)
 
-    def histo_minute(self, fsym, tsym, exchange="bittrex", n=1440):
+    def histo_minute(self, fsym, tsym, exchange="bittrex", limit=1440):
         url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&limit={}".format(fsym, tsym,
-                                                                                                        exchange, n)
+                                                                                                        exchange, limit)
+        return self.request(url)
+
+    def histo_n_minute(self, fsym, tsym, n, exchange="bittrex", limit=1440):
+        url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&limit={}&aggregate={}".format(fsym, tsym,
+                                                                                                        exchange, limit, n)
         return self.request(url)
 
     def latest_price(self, fsym, tsym, exchange="bittrex"):
