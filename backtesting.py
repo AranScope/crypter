@@ -23,7 +23,12 @@ class Tester(object):
             self.tick_start_delay = conf['tick_start_delay']
             self.number_of_ticks = conf['number_of_ticks']
             self.exchange = conf['exchange']
-            print(self.exchange)
+
+            if 'sell_on_finish' in conf:
+                self.sell_on_finish = conf['sell_on_finish']
+            else:
+                self.sell_on_finish = None
+
         self.step_number = 0
 
         self.times = []

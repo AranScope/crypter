@@ -1,6 +1,6 @@
 exchange: gdax
 
-number_of_ticks: 310
+number_of_ticks: 9000
 tick_frequency: 1 # minutes
 tick_start_delay: 50 # minutes
 
@@ -11,5 +11,7 @@ currency_from:
 currency_to:
     symbol: BTC
     balance: 1
+
+sell_on_finish: BTC
 
 transaction_fee: 0.0025

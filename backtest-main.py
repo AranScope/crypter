@@ -21,9 +21,12 @@ class Tester(BackTester):
         #     print("Transferring back to {}".format(self.currency_from))
         #     self.buy(self.currency_to_balance)
 
-        if self.currency_from_balance > 0:
-            print("Transferring back to {}".format(self.currency_to))
-            self.sell(self.currency_from_balance)
+        if self.sell_on_finish is not None:
+            if self.sell_on_finish == self.currency_to:
+                if self.currency_from_balance > 0:
+                    print("Transferring back to {}".format(self.currency_to))
+                    self.sell(self.currency_from_balance)
+
 
         print("Final balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,
                                                    self.currency_to_balance, self.currency_to))
