@@ -25,7 +25,8 @@ class Tester(object):
             self.transaction_fee = conf['transaction_fee']
             self.tick_start_delay = conf['tick_start_delay']
             self.number_of_ticks = conf['number_of_ticks']
-
+            self.exchange = conf['exchange']
+            print(self.exchange)
         self.step_number = 0
 
         self.times = []
@@ -63,9 +64,15 @@ class Tester(object):
             self.currency_to_balance -= amount
             self.currency_from_balance += amount * (1 / conversion_rate) * (1 - self.transaction_fee)
 
-            print("Time: {}, BUY ORDER: Purchased {} {} for {} {}".format(self.current_time(), amount / conversion_rate,
-                                                                          self.currency_from, amount,
-                                                                          self.currency_to))
+            print(
+                "\nBUY ORDER:\n\tPurchased: {} {}\n\tFor: {} {}\n\tExchange rate: {}\n\tAt time: {}\n".format(
+                    amount / conversion_rate,
+                    self.currency_from,
+                    amount,
+                    self.currency_to,
+                    conversion_rate,
+                    self.current_time()))
+
             self.buys.append((self.step_number, price))
         else:
             print("Time: {}, BUY ORDER: Do not have enough {} to make this order".format(self.current_time(),
@@ -93,9 +100,14 @@ class Tester(object):
             self.sells.append((self.step_number, price))
 
             print(
-                "Time: {}, SELL ORDER: Purchased {} {} for {} {}".format(self.current_time(), amount * conversion_rate,
-                                                                         self.currency_to, amount,
-                                                                         self.currency_from))
+                "\nSELL ORDER:\n\tPurchased: {} {}\n\tFor: {} {}\n\tExchange rate: {}\n\tAt time: {}\n".format(
+                    amount * conversion_rate,
+                    self.currency_to,
+                    conversion_rate,
+                    amount,
+                    self.currency_from,
+                    self.current_time()))
+
         else:
             print("Time: {}, SELL ORDER: Do not have enough {} to make this order".format(self.current_time(),
                                                                                           self.currency_from))
@@ -139,7 +151,7 @@ class BackTester(Tester):
 
         bt = Market()  # Pass keys in
 
-        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=(300), exchange="gdax")
+        self.prices = bt.histo_minute(self.currency_from, self.currency_to, n=(300), exchange=self.exchange)
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
         if self.prices is None:
             print("Failed to retrieve histogram data")
