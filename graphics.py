@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 import numpy as np
 from indicators import *
 
-plt.style.use("aran")
+#plt.style.use("aran")
 
 
 def plot_stock_graph(opens, closes, highs, lows, buys, sells):
@@ -16,7 +16,7 @@ def plot_stock_graph(opens, closes, highs, lows, buys, sells):
 
     sma = simple_moving_average(np.array(closes), period=20)
     ema = exponential_moving_average(np.array(closes), 10)
-    bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
+    bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.7, period=20)
 
     series = [("sma", sma),
               ("ema", ema),
@@ -26,7 +26,6 @@ def plot_stock_graph(opens, closes, highs, lows, buys, sells):
 
     for series_name, series_values in series:
         plt.plot(np.arange(len(series_values)), series_values, label=series_name)
-
     legend.append("buys")
     ax.scatter([x[0] for x in buys], [x[1]["close"] for x in buys], c='#00ff00', label='buys', marker='^',
                zorder=10, linewidths=2)
@@ -41,18 +40,18 @@ def plot_stock_graph(opens, closes, highs, lows, buys, sells):
 
     plt.subplot(312)
 
-    bull, bear = elder_ray(closes, highs, lows)
+    bull, bear = elder_ray(closes, highs, lows, period = 100)
     legend2 = []
     legend2.append("bull")
-    plt.bar(np.arange(len(bull)), bull)
-    plt.bar(np.arange(len(bear)), bear)
+    plt.bar(np.arange(len(bull)), bull, alpha=0.8)
+    plt.bar(np.arange(len(bear)), bear, alpha=0.8)
     legend2.append("bear")
     plt.ylabel("bull/bear")
 
     plt.subplot(313)
     rsi = relative_strength_index(np.array(closes), period=14)
 
-    plt.bar(np.arange(len(rsi)), rsi, label="RSI")
+    plt.plot(np.arange(len(rsi)), rsi, label="RSI")
     plt.ylabel("rsi")
     plt.legend(loc="upper left")
     plt.show()

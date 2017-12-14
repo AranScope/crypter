@@ -11,7 +11,8 @@ strategies = {
     'naive': NaiveStrategy,
     'devon': DevonStrategy,
     'peran': PeranStrategy,
-    'trendema': TrendEmaStrategy
+    'trendema': TrendEmaStrategy,
+    'strat1': Strat1
 }
 
 config_uri = './configs/backtest.yml'

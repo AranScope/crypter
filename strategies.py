@@ -6,7 +6,7 @@ environment.
 
 from indicators import *
 
-
+# Where is your strategy?? Just do it on teamviewer, 1 sec
 class Strategy(object):
     def __init__(self):
         pass
@@ -126,9 +126,9 @@ class PeranStrategy(Strategy):
         return False
 
 
-class TrendEmaStrategy(Strategy):
+class TrendEmaStrategy(object):
     def __init__(self):
-        super().__init__()
+        pass
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         ema_short = exponential_moving_average(np.array(closes), 5)
@@ -141,3 +141,77 @@ class TrendEmaStrategy(Strategy):
         ema_long = exponential_moving_average(np.array(closes), 20)
 
         return ema_short[-2] > ema_long[-1] and ema_short[-1] > ema_long[-1]
+
+    class DevonStrategy(Strategy):
+        def __init__(self):
+            super().__init__()
+
+        def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
+            rsi = relative_strength_index(np.array(closes), period=14)
+            bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
+            sma = simple_moving_average(np.array(closes), 20)
+            ema = exponential_moving_average(np.array(closes), 10)
+            bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
+
+            indicator_truths = [
+                rsi[-1] < 30,
+                closes[-1] < bollinger_low[-1],
+                closes[-1] < ema[-1],
+                ema[-1] < sma[-1],
+                ema[-1] < ema[-2],
+                (bull[-1] > bull[-2]) and (bear[-1] > bear[-2]) and bear[-1] < 0 and bull[-1] < 0
+            ]
+
+            num_truths = sum([truth for truth in indicator_truths if truth])
+            return num_truths > 2
+
+        def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
+            rsi = relative_strength_index(np.array(closes), period=14)
+            ema = exponential_moving_average(np.array(closes), 10)
+            bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows))
+
+            indicator_truths = [rsi[-1] > 70,
+                                closes[-1] > ema[-1],
+                                ema[-1] > ema[-2],
+                                bull[-1] > 0 and bull[-1] < bull[-2],
+                                (bear[-1] > bear[-2]) and bear[-1] < 0
+                                ]
+
+            num_truths = sum([truth for truth in indicator_truths if truth])
+            return num_truths > 2
+
+class Strat1(Strategy):
+    def __init__(self):
+        super().__init__()
+
+    def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        rsi = relative_strength_index(np.array(closes), period=14)
+        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.7, period=20)
+        sma = simple_moving_average(np.array(closes), 20)
+        ema = exponential_moving_average(np.array(closes), 10)
+        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=100)
+
+        indicator_truths = [
+            rsi[-1] < 30,
+            closes[-2] < bollinger_low[-2],
+            (bear[-1] > bear[-2]) and bear[-1] < 0
+        ]
+
+        num_truths = sum([truth for truth in indicator_truths if truth])
+        return (ema[-1] < sma[-1]) and (closes[-1] < ema[-1]) and num_truths > 2
+
+    def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        rsi = relative_strength_index(np.array(closes), period=14)
+        ema = exponential_moving_average(np.array(closes), 10)
+        sma = simple_moving_average(np.array(closes), 20)
+        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=50)
+        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
+
+        indicator_truths = [
+            rsi[-1] > 70,
+            bull[-1] > 0 and (bull[-1] < bull[-2]) and (bear[-1] > bear[-2]),
+            closes[-2] > bollinger_high[-2]
+        ]
+
+        num_truths = sum([truth for truth in indicator_truths if truth])
+        return closes[-1] > ema[-1] and (ema[-1] > sma[-1]) and num_truths > 1

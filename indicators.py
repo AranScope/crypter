@@ -142,7 +142,6 @@ def relative_strength_index(values, period=14):
 
     return result
 
-
 def elder_ray(closes, highs, lows, period=13.0):
     ema = exponential_moving_average(closes, period)
     bull = [high - avg for high, avg in zip(highs, ema)]

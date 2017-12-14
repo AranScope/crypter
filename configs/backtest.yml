@@ -1,19 +1,19 @@
-exchange: gdax
+exchange: bittrex
 
-type: backtest # live, realtimetest, multibacktest
-strategy: devon
-
+type: backtest # live, realtimetest
+strategy: strat1
 tick_duration: 1 # minutes
-num_ticks: 100
-tick_start_delay: 50 # minutes
+num_ticks: 1000
+tick_start_delay: 30
+# minutes
 
 currency_from:
-    symbol: ETH
+    symbol: NEO
     balance: 0
 
 currency_to:
     symbol: BTC
-    balance: 10
+    balance: 1
 
 sell_on_finish: BTC
 
