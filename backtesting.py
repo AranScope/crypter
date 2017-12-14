@@ -3,14 +3,13 @@ import gdax
 from indicators import *
 import os
 import yaml
-# I mean alt + enter lol
-
 from graphics import plot_stock_graph
 
 
 class Tester(object):
     def __init__(self, config):
 
+        self.config = config
         self.currency_from = config['currency_from']['symbol']
         self.currency_to = config['currency_to']['symbol']
         self.currency_from_balance = config['currency_from']['balance']
@@ -20,6 +19,7 @@ class Tester(object):
         self.tick_duration = config['tick_duration']
         self.num_ticks = config['num_ticks']
         self.exchange = config['exchange']
+        self.strategy = config['strategy']
 
         if 'sell_on_finish' in config:
             self.sell_on_finish = config['sell_on_finish']
@@ -117,6 +117,27 @@ class Tester(object):
     def stop(self):
         pass
 
+    def write_output(self):
+        base_file_name = os.path.join('./output', self.strategy)
+        num_existing_files = len([fname for fname in os.listdir('./output') if self.strategy in fname])
+        print(num_existing_files)
+
+        out_file_name = "{}-{}.csv".format(base_file_name, num_existing_files)
+
+        with open(out_file_name, 'w') as f:
+
+            f.write('strategy, buys, sells, total trades, start {0}, start {1}, end {0}, end {1}\n'.format(self.currency_from, self.currency_to))
+            f.write('{}, {}, {}, {}, {}, {}, {}, {}'.format(
+                self.strategy,
+                len(self.buys),
+                len(self.sells),
+                len(self.buys) + len(self.sells),
+                self.config['currency_from']['balance'],
+                self.config['currency_to']['balance'],
+                self.currency_from_balance,
+                self.currency_to_balance
+            ))
+
     def run(self):
         price = self.current_price()
 
@@ -139,6 +160,7 @@ class Tester(object):
 
         self.step_number -= 1
         self.stop()
+        self.write_output()
 
 
 class BackTester(Tester):
