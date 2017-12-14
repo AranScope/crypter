@@ -1,6 +1,6 @@
 exchange: gdax
 
-type: backtest # live, realtimetest
+type: backtest # live, realtimetest, multibacktest
 strategy: devon
 
 tick_duration: 1 # minutes
@@ -9,12 +9,12 @@ tick_start_delay: 50 # minutes
 
 currency_from:
     symbol: ETH
-    balance: 1
+    balance: 0
 
 currency_to:
     symbol: BTC
-    balance: 0
+    balance: 10
 
-sell_on_finish: ETH
+sell_on_finish: BTC
 
 transaction_fee: 0.0025

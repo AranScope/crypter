@@ -126,9 +126,9 @@ class PeranStrategy(Strategy):
         return False
 
 
-class TrendEmaStrategy(object):
+class TrendEmaStrategy(Strategy):
     def __init__(self):
-        pass
+        super().__init__()
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         ema_short = exponential_moving_average(np.array(closes), 5)
