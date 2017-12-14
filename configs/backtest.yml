@@ -8,7 +8,7 @@ tick_start_delay: 30
 # minutes
 
 currency_from:
-    symbol: NEO
+    symbol: STR
     balance: 0
 
 currency_to:
