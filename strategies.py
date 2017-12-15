@@ -186,15 +186,15 @@ class Strat1(Strategy):
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
-        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.7, period=20)
+        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.8, period=20)
         sma = simple_moving_average(np.array(closes), 20)
         ema = exponential_moving_average(np.array(closes), 10)
-        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=100)
+        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=13)
 
         indicator_truths = [
-            rsi[-1] < 30,
+            rsi[-1] < 35,
             closes[-2] < bollinger_low[-2],
-            (bear[-1] > bear[-2]) and bear[-1] < 0
+            (bear[-1] > bear[-2] > bear[-3]) and (bull[-1] > bull[-2] > bull[-3])
         ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
@@ -204,12 +204,12 @@ class Strat1(Strategy):
         rsi = relative_strength_index(np.array(closes), period=14)
         ema = exponential_moving_average(np.array(closes), 10)
         sma = simple_moving_average(np.array(closes), 20)
-        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=50)
+        bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=13)
         bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
 
         indicator_truths = [
             rsi[-1] > 70,
-            bull[-1] > 0 and (bull[-1] < bull[-2]) and (bear[-1] > bear[-2]),
+            (bull[-1] < bull[-2] < bull[-3]) and (bear[-1] > bear[-2] > bear[-3]),
             closes[-2] > bollinger_high[-2]
         ]
 
