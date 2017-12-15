@@ -25,17 +25,34 @@ class Market(object):
     def histo_quarter_hour(self, fsym, tsym, exchange="bittrex"):
         url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&aggregate=15&limit=1440".format(
             fsym, tsym, exchange)
-        return self.request(url)
+
+        result = self.request(url)
+
+        if result['Response'] == 'Error':
+            return None
+
+        return result
+
 
     def histo_minute(self, fsym, tsym, exchange="bittrex", limit=1440):
         url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&limit={}".format(fsym, tsym,
                                                                                                         exchange, limit)
-        return self.request(url)
+        result = self.request(url)
+
+        if result['Response'] == 'Error':
+            return None
+
+        return result
 
     def histo_n_minute(self, fsym, tsym, n, exchange="bittrex", limit=1440):
         url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&limit={}&aggregate={}".format(fsym, tsym,
                                                                                                         exchange, limit, n)
-        return self.request(url)
+        result = self.request(url)
+
+        if result['Response'] == 'Error':
+            return None
+
+        return result
 
     def latest_price(self, fsym, tsym, exchange="bittrex"):
         url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&limit=1".format(fsym, tsym,
@@ -45,7 +62,12 @@ class Market(object):
     def histo_hour(self, fsym, tsym, exchange="bittrex"):
         url = "https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&e={}&limit={}".format(fsym, tsym,
                                                                                                       exchange, 672)
-        return self.request(url)
+        result = self.request(url)
+
+        if result['Response'] == 'Error':
+            return None
+
+        return result
 
     def get_markets(self):
         url = "https://bittrex.com/api/v2.0/pub/markets/GetMarkets?_=1500913483670"

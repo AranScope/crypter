@@ -1,5 +1,7 @@
-exchange: gdax
+exchange: bittrex
 
+type: backtest # live, realtimetest
+strategy: peran
 tick_duration: 1 # minutes
 num_ticks: 6000
 tick_start_delay: 30 # minutes

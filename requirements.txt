@@ -1,0 +1,5 @@
+matplotlib
+gdax
+numpy
+requests
+yaml

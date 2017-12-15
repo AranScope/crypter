@@ -1,33 +1,30 @@
 from market import Market
 import gdax
-from matplotlib import pyplot as plt
-import matplotlib.finance as finance
 from indicators import *
 import os
 import yaml
+from graphics import plot_stock_graph
 
-#plt.style.use("aran")
-#plt.style.use("ggplot")
 
 class Tester(object):
-    def __init__(self, config_uri):
+    def __init__(self, config):
 
-        with open(config_uri, 'r') as f:
-            conf = yaml.load(f)
-            self.currency_from = conf['currency_from']['symbol']
-            self.currency_to = conf['currency_to']['symbol']
-            self.currency_from_balance = conf['currency_from']['balance']
-            self.currency_to_balance = conf['currency_to']['balance']
-            self.transaction_fee = conf['transaction_fee']
-            self.tick_start_delay = conf['tick_start_delay']
-            self.tick_duration = conf['tick_duration']
-            self.num_ticks = conf['num_ticks']
-            self.exchange = conf['exchange']
+        self.config = config
+        self.currency_from = config['currency_from']['symbol']
+        self.currency_to = config['currency_to']['symbol']
+        self.currency_from_balance = config['currency_from']['balance']
+        self.currency_to_balance = config['currency_to']['balance']
+        self.transaction_fee = config['transaction_fee']
+        self.tick_start_delay = config['tick_start_delay']
+        self.tick_duration = config['tick_duration']
+        self.num_ticks = config['num_ticks']
+        self.exchange = config['exchange']
+        self.strategy = config['strategy']
 
-            if 'sell_on_finish' in conf:
-                self.sell_on_finish = conf['sell_on_finish']
-            else:
-                self.sell_on_finish = None
+        if 'sell_on_finish' in config:
+            self.sell_on_finish = config['sell_on_finish']
+        else:
+            self.sell_on_finish = None
 
         self.step_number = 0
 
@@ -120,6 +117,30 @@ class Tester(object):
     def stop(self):
         pass
 
+    def write_output(self):
+        if not os.path.exists('./output'):
+            os.mkdir('./output')
+
+        base_file_name = os.path.join('./output', self.strategy)
+        num_existing_files = len([fname for fname in os.listdir('./output') if self.strategy in fname])
+        print(num_existing_files)
+
+        out_file_name = "{}-{}.csv".format(base_file_name, num_existing_files)
+
+        with open(out_file_name, 'w') as f:
+
+            f.write('strategy, buys, sells, total trades, start {0}, start {1}, end {0}, end {1}\n'.format(self.currency_from, self.currency_to))
+            f.write('{}, {}, {}, {}, {}, {}, {}, {}'.format(
+                self.strategy,
+                len(self.buys),
+                len(self.sells),
+                len(self.buys) + len(self.sells),
+                self.config['currency_from']['balance'],
+                self.config['currency_to']['balance'],
+                self.currency_from_balance,
+                self.currency_to_balance
+            ))
+
     def run(self):
         price = self.current_price()
 
@@ -142,11 +163,14 @@ class Tester(object):
 
         self.step_number -= 1
         self.stop()
+        self.write_output()
 
 
 class BackTester(Tester):
-    def __init__(self, config_uri):
+    def __init__(self, config_uri, strategy):
         super().__init__(config_uri)
+
+        self.strat = strategy
 
         bt = Market()  # Pass keys in
 
@@ -167,62 +191,31 @@ class BackTester(Tester):
         else:
             return None
 
-    def draw_line_graph(self, *args):
+    def tick(self, time, open, high, low, close, volume_from, volume_to):
 
-        ax = plt.subplot(311)
-        legend = []
+        if self.strat.should_sell(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if self.currency_from_balance > 0:
+                self.sell(self.currency_from_balance)
+        elif self.strat.should_buy(self.opens, self.highs, self.lows, self.closes, self.volume_froms, self.volume_tos):
+            if self.currency_to_balance > 0:
+                self.buy(self.currency_to_balance)
 
-        finance.candlestick2_ochl(ax, self.opens, self.closes, self.highs, self.lows, width=1,
-                                  colorup='g', colordown='r',
-                                  alpha=0.25)
+    def stop(self):
 
-        for series_name, series_values in args:
-            plt.plot(np.arange(len(series_values)), series_values, label=series_name)
+        if self.sell_on_finish is not None:
+            if self.sell_on_finish == self.currency_from:
+                if self.currency_to_balance > 0:
+                    print("Transferring remaining {} to {}".format(self.currency_to, self.currency_from))
+                    self.buy(self.currency_to_balance)
+            else:
+                if self.currency_from_balance > 0:
+                    print("Transferring remaining {} to {}".format(self.currency_from, self.currency_to))
+                    self.sell(self.currency_from_balance)
 
-        legend.append("buys")
-        ax.scatter([x[0] for x in self.buys], [x[1]["close"] for x in self.buys], c='#00ff00', label='buys', marker='^',
-                   zorder=10, linewidths=2)
+        print("Final balance: {} {}, {} {}".format(self.currency_from_balance, self.currency_from,
+                                                   self.currency_to_balance, self.currency_to))
 
-        legend.append("sells")
-        ax.scatter([x[0] for x in self.sells], [x[1]["close"] for x in self.sells], c='#ee0000', label='sells',
-                   marker='v', zorder=10, linewidths=2)
-
-        plt.ylabel('price')
-
-        plt.legend(loc='upper left')
-
-        plt.subplot(312)
-
-        bull, bear = elder_ray(self.closes, self.highs, self.lows)
-        legend2 = []
-        legend2.append("bull")
-        plt.bar(np.arange(len(bull)), bull)
-        plt.bar(np.arange(len(bear)), bear)
-        legend2.append("bear")
-        plt.ylabel("bull/bear")
-
-        plt.subplot(313)
-        rsi = relative_strength_index(np.array(self.closes), period=14)
-
-        plt.bar(np.arange(len(rsi)), rsi, label="RSI")
-        plt.ylabel("rsi")
-        plt.legend(loc="upper left")
-        plt.show()
-
-    def draw_bar_graph(self, *args):
-        x = np.arange(len(self.closes))
-
-        legend = []
-
-        for series_name, series_values in args:
-            legend.append(series_name)
-            plt.bar(x, list(series_values))
-
-        plt.ylabel('Price')
-
-        plt.legend(legend, loc='upper left')
-
-        plt.show()
+        plot_stock_graph(self.opens, self.closes, self.highs, self.lows, self.buys, self.sells)
 
 
 class RealtimeTester(Tester):
@@ -306,8 +299,6 @@ class GDAXTester(Tester):
 
             print(self.auth_client.buy(price='{0:.6f}'.format(conversion_rate),
                                        size='{0:.6f}'.format(amount / conversion_rate), product_id='ETH-BTC'))
-
-            # print(auth_client.get_accounts())
 
             print("BUY ORDER: Purchased {} {} for {} {}".format(amount / conversion_rate, self.currency_from, amount,
                                                                 self.currency_to))

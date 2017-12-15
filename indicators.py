@@ -19,12 +19,16 @@ def simple_moving_average(values, period):
     :return: The simple moving average of the data
     """
 
-    if len(values) >= period:
+    if period < 1:
+        raise RuntimeError("Period size must be 1 < P < len(values)")
+
+    elif len(values) < period:
+        raise RuntimeError("Can not compute SMA of dataset smaller than period")
+
+    else:
         padding = np.full((period - 1,), np.nan)
         mean = np.mean(rolling_window(values, period), 1)
         return np.concatenate([padding, mean])
-
-    raise RuntimeError("Can not compute SMA of dataset smaller than period")
 
 
 def exponential_moving_average(values, periods):
@@ -128,19 +132,15 @@ def relative_strength_index(values, period=14):
 
         rs = (sum(gains) / len(gains)) / (sum(losses) / len(losses))
 
-        # (sum(gains) / max(1, len(gains))) / (max(1, (sum(losses) / max(1, len(losses)))))
-
         rsi = 100 - 100 / (1 + rs)
         rsis.append(rsi)
 
-    # TODO: This is FIX
+    # TODO: This is a fix for displaying the RSI graphically
     padding = np.full((period - 1,), 0)
 
     result = np.concatenate([padding, np.array(rsis)])
-    assert (len(result) == len(values))
 
     return result
-
 
 def elder_ray(closes, highs, lows, period=13.0):
     ema = exponential_moving_average(closes, period)
