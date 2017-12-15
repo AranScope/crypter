@@ -113,15 +113,15 @@ class PeranStrategy(Strategy):
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         # av = [(open + close) / 2 for open, close in zip(opens, closes)]
-        av = lows #[(a + b) / 2 for a, b in zip(lows[::2], lows[1::2])]
-        if av[-1] > av[-2] > av[-3] > av[-4]:
+        av = opens #[(a + b) / 2 for a, b in zip(lows[::2], lows[1::2])]
+        if len(av) > 45 and av[-1] > av[-15] > av[-30]:
             return True
         return False
 
     def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
         av = [(open + close) / 2 for open, close in zip(opens, closes)]
         #av = highs #[(a + b) / 2 for a, b in zip(highs[::2], highs[1::2])]
-        if av[-1] < av[-2] and av[-1] < av[-3]:
+        if len(av) > 30 and av[-1] < av[-15] and av[-1] < av[-30]:
             return True
         return False
 

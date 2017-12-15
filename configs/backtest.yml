@@ -1,17 +1,17 @@
 exchange: gdax
 
 tick_duration: 1 # minutes
-num_ticks: 2000
-tick_start_delay: 50 # minutes
+num_ticks: 6000
+tick_start_delay: 30 # minutes
 
 currency_from:
     symbol: ETH
-    balance: 0
+    balance: 1
 
 currency_to:
     symbol: BTC
-    balance: 1
+    balance: 0
 
-sell_on_finish: BTC
+sell_on_finish: ETH
 
 transaction_fee: 0.0025
