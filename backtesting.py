@@ -120,7 +120,7 @@ class Tester(object):
     def write_output(self):
         if not os.path.exists('./output'):
             os.mkdir('./output')
-            
+
         base_file_name = os.path.join('./output', self.strategy)
         num_existing_files = len([fname for fname in os.listdir('./output') if self.strategy in fname])
         print(num_existing_files)

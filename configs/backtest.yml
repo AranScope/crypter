@@ -5,10 +5,9 @@ strategy: strat1
 tick_duration: 1 # minutes
 num_ticks: 1000
 tick_start_delay: 30
-# minutes
 
 currency_from:
-    symbol: NEO
+    symbol: ETH
     balance: 0
 
 currency_to:
