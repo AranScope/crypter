@@ -27,7 +27,6 @@ class Tester(object):
                     self.sell_on_finish=self.currency_from
                 else:
                     self.sell_on_finish=self.currency_to
-                print(self.sell_on_finish)
             else:
                 self.sell_on_finish = config['sell_on_finish']
         else:
