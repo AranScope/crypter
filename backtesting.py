@@ -1,9 +1,9 @@
-from market import Market
-import gdax
-from indicators import *
 import os
-import yaml
+
+import gdax
+
 from graphics import plot_stock_graph
+from market import Market
 
 
 class Tester(object):
@@ -22,7 +22,14 @@ class Tester(object):
         self.strategy = config['strategy']
 
         if 'sell_on_finish' in config:
-            self.sell_on_finish = config['sell_on_finish']
+            if config['sell_on_finish'] == "default":
+                if self.currency_from_balance > self.currency_to_balance:
+                    self.sell_on_finish=self.currency_from
+                else:
+                    self.sell_on_finish=self.currency_to
+                print(self.sell_on_finish)
+            else:
+                self.sell_on_finish = config['sell_on_finish']
         else:
             self.sell_on_finish = None
 

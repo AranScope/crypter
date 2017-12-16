@@ -14,6 +14,6 @@ currency_to:
     symbol: BTC
     balance: 0
 
-sell_on_finish: ETH
+sell_on_finish: default #currency symbol or default, where it is the currency with the most value
 
 transaction_fee: 0.0025
