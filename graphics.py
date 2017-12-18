@@ -15,11 +15,13 @@ def plot_stock_graph(opens, closes, highs, lows, buys, sells):
                               alpha=0.25)
 
     sma = simple_moving_average(np.array(closes), period=20)
-    ema = exponential_moving_average(np.array(closes), 10)
-    bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.7, period=20)
+    ema_50 = exponential_moving_average(np.array(closes), 50)
+    ema_20 = exponential_moving_average(np.array(closes), 20)
+    bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2, period=20)
 
     series = [("sma", sma),
-              ("ema", ema),
+              ("ema_50", ema_50),
+              ("ema_20", ema_20),
               ("close", closes),
               ("bol upper", bollinger_high),
               ("bol lower", bollinger_low)]

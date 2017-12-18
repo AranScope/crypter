@@ -186,32 +186,32 @@ class Strat1(Strategy):
 
     def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
-        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=1.8, period=20)
+        bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
         sma = simple_moving_average(np.array(closes), 20)
-        ema = exponential_moving_average(np.array(closes), 10)
+        ema_50 = exponential_moving_average(np.array(closes),50)
+        ema_20 = exponential_moving_average(np.array(closes),20)
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=13)
 
         indicator_truths = [
-            rsi[-1] < 35,
-            closes[-2] < bollinger_low[-2],
-            (bear[-1] > bear[-2] > bear[-3]) and (bull[-1] > bull[-2] > bull[-3])
+            rsi[-1] < 30,
+            closes[-1] < bollinger_low[-1]
         ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-        return (ema[-1] < sma[-1]) and (closes[-1] < ema[-1]) and num_truths > 2
+        return closes[-1] < ema_50[-1] and closes[-1] < ema_20[-1] and num_truths > 1
 
     def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
         rsi = relative_strength_index(np.array(closes), period=14)
-        ema = exponential_moving_average(np.array(closes), 10)
+        ema_50 = exponential_moving_average(np.array(closes),50)
+        ema_20 = exponential_moving_average(np.array(closes),20)
         sma = simple_moving_average(np.array(closes), 20)
         bull, bear = elder_ray(np.array(closes), np.array(highs), np.array(lows), period=13)
         bollinger_high, bollinger_low = bollinger(np.array(closes), num_sd=2.0, period=20)
 
         indicator_truths = [
-            rsi[-1] > 70,
-            (bull[-1] < bull[-2] < bull[-3]) and (bear[-1] > bear[-2] > bear[-3]),
-            closes[-2] > bollinger_high[-2]
+            rsi[-1] > 65,
+            closes[-1] > bollinger_high[-1]
         ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-        return closes[-1] > ema[-1] and (ema[-1] > sma[-1]) and num_truths > 1
+        return closes[-1] > ema_50[-1] and closes[-1] > ema_20[-1] and num_truths > 1
