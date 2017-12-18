@@ -180,9 +180,9 @@ class BackTester(Tester):
 
         bt = Market()  # Pass keys in
 
-        #self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
-        #                                limit=self.num_ticks, exchange=self.exchange)
-        self.prices = bt.histo_quarter_hour(self.currency_from, self.currency_to, exchange=self.exchange)
+        self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
+                                       limit=self.num_ticks, exchange=self.exchange)
+
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
 
         if self.prices is None:

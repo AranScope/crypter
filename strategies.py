@@ -214,8 +214,5 @@ class Strat1(Strategy):
         ]
 
         num_truths = sum([truth for truth in indicator_truths if truth])
-<<<<<<< HEAD
+
         return closes[-1] > ema_50[-1] and closes[-1] > ema_20[-1] and num_truths > 1
-=======
-        return closes[-1] > ema[-1] and (ema[-1] > sma[-1]) and num_truths > 1
->>>>>>> f8aefb50a126e1452268258a1966150486401b50

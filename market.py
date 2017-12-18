@@ -22,16 +22,16 @@ class Market(object):
 
         return response.json()
 
-    def histo_quarter_hour(self, fsym, tsym, exchange="bittrex"):
-        url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&aggregate=15&limit=1440".format(
-            fsym, tsym, exchange)
-
-        result = self.request(url)
-
-        if result['Response'] == 'Error':
-            return None
-
-        return result
+    # def histo_quarter_hour(self, fsym, tsym, exchange="bittrex", limit=1440):
+    #     url = "https://min-api.cryptocompare.com/data/histominute?fsym={}&tsym={}&e={}&aggregate=15&limit={}".format(
+    #         fsym, tsym, exchange, limit)
+    #
+    #     result = self.request(url)
+    #
+    #     if result['Response'] == 'Error':
+    #         return None
+    #
+    #     return result
 
 
     def histo_minute(self, fsym, tsym, exchange="bittrex", limit=1440):

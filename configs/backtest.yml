@@ -1,18 +1,19 @@
 exchange: bittrex
 
 type: backtest # live, realtimetest
-strategy: peran
+strategy: strat1
+# start_time: default, asddsa
 tick_duration: 1 # minutes
-num_ticks: 6000
+num_ticks: 1000 # max 2000
 tick_start_delay: 30 # minutes
 
 currency_from:
     symbol: ETH
-    balance: 1
+    balance: 0
 
 currency_to:
     symbol: BTC
-    balance: 0
+    balance: 1
 
 sell_on_finish: default #currency symbol or default, where it is the currency with the most value
 
