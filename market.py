@@ -50,6 +50,7 @@ class Market(object):
         result = self.request(url)
 
         if result['Response'] == 'Error':
+            print(result)
             return None
 
         return result
@@ -59,9 +60,9 @@ class Market(object):
                                                                                                        exchange)
         return self.request(url)
 
-    def histo_hour(self, fsym, tsym, exchange="bittrex"):
+    def histo_hour(self, fsym, tsym, exchange="bittrex", limit=672):
         url = "https://min-api.cryptocompare.com/data/histohour?fsym={}&tsym={}&e={}&limit={}".format(fsym, tsym,
-                                                                                                      exchange, 672)
+                                                                                                      exchange, limit)
         result = self.request(url)
 
         if result['Response'] == 'Error':

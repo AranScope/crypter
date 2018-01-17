@@ -78,7 +78,9 @@ class Tester(object):
                     conversion_rate,
                     self.current_time()))
 
-            self.buys.append((self.step_number, price))
+
+            # TODO: We've sold some of currency_from to currency_to, probably get better wording
+            self.sells.append((self.step_number, price))
         else:
             print("Time: {}, BUY ORDER: Do not have enough {} to make this order".format(self.current_time(),
                                                                                          self.currency_to))
@@ -102,7 +104,8 @@ class Tester(object):
             self.currency_from_balance -= amount
             self.currency_to_balance += amount * conversion_rate * (1 - self.transaction_fee)
 
-            self.sells.append((self.step_number, price))
+            # SEE ABOVE TODO
+            self.buys.append((self.step_number, price))
 
             print(
                 "\nSELL ORDER:\n\tPurchased: {} {}\n\tFor: {} {}\n\tExchange rate: {}\n\tAt time: {}\n".format(
@@ -180,14 +183,19 @@ class BackTester(Tester):
 
         bt = Market()  # Pass keys in
 
-        self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
-                                       limit=self.num_ticks, exchange=self.exchange)
+        if self.tick_duration % 60 == 0:
+            self.prices = bt.histo_hour(self.currency_from, self.currency_to, exchange=self.exchange, limit=self.num_ticks)
+        else:
+            self.prices = bt.histo_n_minute(self.currency_from, self.currency_to, self.tick_duration,
+                                        limit=self.num_ticks, exchange=self.exchange)
 
         # self.prices = bt.histo_hour(currency_from, currency_to, exchange="bittrex")
 
         if self.prices is None:
             print("Failed to retrieve histogram data")
             exit(-1)
+
+        print(self.prices)
 
     def current_time(self):
         return self.step_number
@@ -309,7 +317,9 @@ class GDAXTester(Tester):
 
             print("BUY ORDER: Purchased {} {} for {} {}".format(amount / conversion_rate, self.currency_from, amount,
                                                                 self.currency_to))
-            self.buys.append((self.step_number - 1, price))
+
+            # TODO: We've sold some of currency_from to currency_to, probably get better wording
+            self.sells.append((self.step_number - 1, price))
         else:
             print("BUY ORDER: Do not have enough {} to make this order".format(self.currency_to))
 
@@ -341,7 +351,8 @@ class GDAXTester(Tester):
             #
             # 0.00137712
 
-            self.sells.append((self.step_number, price))
+            # TODO: See previous TODO.
+            self.buys.append((self.step_number, price))
 
             print("SELL ORDER: Purchased {} {} for {} {}".format(amount * conversion_rate, self.currency_to, amount,
                                                                  self.currency_from))

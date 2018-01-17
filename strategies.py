@@ -216,3 +216,36 @@ class Strat1(Strategy):
         num_truths = sum([truth for truth in indicator_truths if truth])
 
         return closes[-1] > ema_50[-1] and closes[-1] > ema_20[-1] and num_truths > 1
+
+
+class TrendStrategy(Strategy):
+    def __init__(self):
+        super().__init__()
+
+    def should_buy(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        ema_50 = exponential_moving_average(np.array(closes), 50)
+        ema_20 = exponential_moving_average(np.array(closes), 20)
+        ema_10 = exponential_moving_average(np.array(closes), 10)
+
+        if ema_50[-1] > ema_50[-2] < ema_50[-3]:
+            # local minima
+            return True
+
+        else:
+            return False
+
+
+
+    def should_sell(self, opens, highs, lows, closes, volume_froms, volume_tos):
+        ema_50 = exponential_moving_average(np.array(closes), 50)
+        ema_20 = exponential_moving_average(np.array(closes), 20)
+        ema_10 = exponential_moving_average(np.array(closes), 10)
+
+        if ema_50[-1] < ema_50[-2] > ema_50[-3]:
+            # local maxima
+            return True
+
+        else:
+            return False
+
+

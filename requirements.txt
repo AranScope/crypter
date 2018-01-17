@@ -2,4 +2,4 @@ matplotlib
 gdax
 numpy
 requests
-yaml
+pyyaml
